@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PropEase - Account</title>
+    <link rel="stylesheet" href="account.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo left">
+                <img src="C:\Users\JaneBenneth\Downloads\Project-main\Project-main\LSPU.png" alt="University Logo">
+            </div>
+            <div class="header-title">
+                <h1>LAGUNA STATE POLYTECHNIC UNIVERSITY - SANTA CRUZ CAMPUS</h1>
+                <h2>College of Computer Studies</h2>
+                <h3>A.Y. 2023-2024</h3>
+            </div>
+            <div class="logo right">
+                <img src="C:\Users\JaneBenneth\Downloads\Project-main\Project-main\CCS.png" alt="CCS Logo">
+            </div>
+        </div>
+    </header>
+
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    <div class="menu" id="menu">
+        <ul>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+            <li><a href="#maint.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Proposals</a></li>
+            <li><a href="#"><i class="fas fa-archive"></i> Archive</a></li>
+            <li><a href="#account.html"><i class="fas fa-user"></i> Account</a></li>
+            <button class="cn"><a href="main.html">Log Out</a></button>
+        </ul>
+    </div>  
+
+    <div class="content">
+        <h1><span>Profile</span></h1>
+        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
+    </div>
+
+    <div class="form">
+        <p><strong>Name:</strong> <span id="name"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Password:</strong> <span id="password"></span></p> 
+    </div>
+
+    <!-- Delete Account Button -->
+    <div class="delete-account">
+        <button onclick="confirmDelete()">
+            <i class="fas fa-trash-alt"></i> Delete Account
+        </button>
+    </div>
+
+    <script>
+        // Display stored user data from sessionStorage on account page load
+        document.addEventListener("DOMContentLoaded", function() {
+            const email = sessionStorage.getItem('email');
+            const password = sessionStorage.getItem('password');
+
+            // Populate the spans with retrieved data
+            document.getElementById('email').textContent = email || "Not provided";
+            
+            // Display the password as asterisks if it exists
+            const maskedPassword = password ? '*'.repeat(password.length) : "Not provided";
+            document.getElementById('password').textContent = maskedPassword;
+        });
+
+        // Function to confirm deletion
+        function confirmDelete() {
+            const confirmation = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+            if (confirmation) {
+                deleteAccount(); // Call deleteAccount function if confirmed
+            }
+        }
+
+        // Function to delete account
+        function deleteAccount() {
+            // Clear user data from sessionStorage
+            sessionStorage.removeItem('email');
+            sessionStorage.removeItem('password');
+            alert("Your account has been deleted.");
+            
+            // Redirect to home or login page after deletion
+            window.location.href = "main.html";
+        }
+    </script>
+    
+</body>
+</html>
