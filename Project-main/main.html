@@ -8,6 +8,7 @@
     <title>PropEase</title>
     <link rel="stylesheet" href="main-style.css">
     <link rel="icon" type="image/svg+xml" href="docs.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -35,13 +36,12 @@
             <li><a href="#"><i class="fas fa-file-alt"></i> Proposals</a></li>
             <li><a href="#"><i class="fas fa-archive"></i> Archive</a></li>
             <li><a href="#"><i class="fas fa-user"></i> Account</a></li>
-            <li><a href="#no_account.html"><i class="fas fa-user-plus"></i> Sign-Up</a></li>
+            <li><a href="signin.html"><i class="fas fa-user-plus"></i> Sign-Up</a></li>
         </ul>
     </div>    
     
     <div class="content">
         <h1><span>PropEase</span></h1>
-        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
         
         <p class="p">
             Welcome to PropEase, the place where academic topic <br>
@@ -57,7 +57,7 @@
         
         <div class="form">
             <h2>Log In Here</h2>
-            <form onsubmit="loginUser(event)">
+            <form id="login-form" onsubmit="loginUser(event)">
                 <input type="email" id="email" placeholder="Enter Email" required>
                 <input type="password" id="password" placeholder="Enter Password" required>
                 <button class="btnn" type="submit">Log In</button>
@@ -65,26 +65,10 @@
             <p class="link">Don't have an account?<br>
                 <a href="signin.html">Sign Up Here</a>
             </p>
-        </div>
-        
-        <script>
-            function loginUser(event) {
-            event.preventDefault(); // Prevents page reload
-
-            // Capture the user's inputs
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Store the values in session storage
-            sessionStorage.setItem('email', email);
-            sessionStorage.setItem('password', password);
-
-            // Redirect to the account page
-            window.location.href = 'account.html';}
-        </script>
-
+        </div> 
     </div>
-    <script src="server.js"></script>
 
+    <script src="server.js"></script>
+   
 </body>
 </html>

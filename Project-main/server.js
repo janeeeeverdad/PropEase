@@ -1,4 +1,4 @@
-// JavaScript to toggle menu visibility
+// TOGGLE MENU
 function toggleMenu() {
     const menu = document.getElementById('menu');
     menu.style.left = menu.style.left === '0px' ? '-300px' : '0px';
@@ -13,40 +13,50 @@ document.addEventListener('click', function(event) {
     }
 });
 
-
-document.getElementById('login-form').addEventListener('submit', function(event) {
+// LOGIN FUNCTION
+function loginUser(event) {
     event.preventDefault();
 
-    // Get the input values
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Simple validation
     if (email === '' || password === '') {
         alert('Please enter both email and password');
         return;
     }
 
-    // Store user data in localStorage (for demo purposes)
-    localStorage.setItem('userEmail', email);
-    localStorage.setItem('userPassword', password);
+    sessionStorage.setItem('userEmail', email);
+    sessionStorage.setItem('userPassword', password);
 
-    // Redirect to account page
-    window.location.href = 'account.html';
-});
+    window.location.href = 'home.html';
+}
 
-// Display user data on account page
-window.addEventListener('DOMContentLoaded', (event) => {
+// ACCOUNT PAGE LOAD FUNCTION
+window.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.endsWith('account.html')) {
-        const email = localStorage.getItem('userEmail');
-        const password = localStorage.getItem('userPassword');
+        const email = sessionStorage.getItem('userEmail');
+        const password = sessionStorage.getItem('userPassword');
 
         if (email && password) {
-            document.getElementById('name').textContent = `Name: ${email.split('@')[0]}`;
-            document.getElementById('email').textContent = `Email: ${email}`;
-            document.getElementById('password').textContent = `Password: ${'*'.repeat(password.length)}`;
+            document.getElementById('email-display').textContent = email;
+            document.getElementById('password-display').textContent = '*'.repeat(password.length);
         } else {
-            window.location.href = 'main.html'; // Redirect to login if no data found
+            window.location.href = 'login.html';
         }
     }
 });
+
+// DELETE ACCOUNT FUNCTION
+function confirmDelete() {
+    const confirmation = confirm("Are you sure you want to delete your account? This action cannot be undone.");
+    if (confirmation) {
+        deleteAccount();
+    }
+}
+
+function deleteAccount() {
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('userPassword');
+    alert("Your account has been deleted.");
+    window.location.href = "main.html";
+}

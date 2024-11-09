@@ -5,12 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>PropEase</title>
-    <link rel="stylesheet" href="home.css">
-    <link rel="icon" type="image/svg+xml" href="docs.svg">
+    <title>PropEase - Proposal</title>
+    <link rel="stylesheet" href="proposal.css">
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <header class="header">
         <div class="header-container">
@@ -38,34 +36,40 @@
             <li><a href="account.html"><i class="fas fa-user"></i> Account</a></li> 
             <li><a href="main.html"><i class="fa-solid fa-right-from-bracket"></i> Log Out</a></li>
         </ul>
-    </div>    
+    </div> 
     
     <div class="content">
-        <h1><span>PropEase</span></h1>
-        <p class="p">
-            Welcome to PropEase, the place where academic topic <br>
-            proposal matching creativity and productivity meet! <br>
-            Say goodbye to difficult paperwork and welcome to an <br>
-            intelligent, simplified approach that will completely <br>
-            transform the way subjects are suggested and paired. <br>
-            Our platform is to help learners, and instructors <br>
-            with ideal project subjects in a paperless setting.<br>
-            It has never been easier to locate the perfect<br>
-            topic recommendations for topic proposals. <br>
-        </p>
+        <div class="panel upload-container" id="file-view">
+            <!-- Placeholder for displaying file content -->
+        </div>
 
-        <button class="cn">
-            <a href="proposal_upload.html">
-                <i class="fas fa-arrow-right"></i> Get Started
-            </a>
-        </button>
-        
-        <div class="form">
-            <img src="C:\Users\JaneBenneth\Downloads\Project-main\Project-main\purple_dragon.png" alt="dragon">
+        <div class="panel recommendations">
+            <button class="recommendation-button" onclick="toggleModal()">Recommendations</button>
+            <span class="microphone-icon" onclick="toggleSpeechToText()">
+                <i class="fa fa-microphone"></i>
+            </span>
+        </div>        
+
+        <div class="panel qa">
+            <h3><span>Q & A</span></h3>
+            <p>Click yes or no if the question has been answered</p>
         </div>
     </div>
 
-    <script src="server.js"></script>
-    
+    <!-- Popup Modal for Recommendations -->
+    <div id="recommendationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">×</span>
+            <h3>Title Recommendations</h3>
+            <ul class="recommended-titles">
+                <li>Title 1:</li>
+                <li>Title 2:</li>
+                <li>Title 3:</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="proposals.js"></script>
+
 </body>
 </html>

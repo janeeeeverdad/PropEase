@@ -31,11 +31,11 @@
     <div class="menu" id="menu">
         <ul>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-            <li><a href="#main.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="main.html"><i class="fa-solid fa-house"></i> Home</a></li>
             <li><a href="#"><i class="fas fa-file-alt"></i> Proposals</a></li>
             <li><a href="#"><i class="fas fa-archive"></i> Archive</a></li>
             <li><a href="#"><i class="fas fa-user"></i> Account</a></li>
-            <button class="cn"><a href="main.html">Log In</a></button>
+            <li><a href="main.html"><i class="fas fa-sign-in-alt"></i> Log In</a></li>
         </ul>
     </div> 
     
@@ -57,15 +57,26 @@
 
         <div class="form">
             <h2>Sign Up Here</h2>
-            <form id="login-form">
-                <input type="email" name="email" placeholder="Enter Email Here">
-                <input type="password" name="password" placeholder="Enter Password Here">
-                <button class="btnn" type="submit"><a href="home.html">Sign Up</a></button>
+            <form id="login-form" onsubmit="redirectToLogin(event)">
+                <input type="email" name="email" placeholder="Enter Email Here" required>
+                <input type="password" name="password" placeholder="Enter Password Here" required>
+                <button class="btnn" type="submit">Sign Up</button>
             </form>
-
+        
             <p class="link">Have an account already?<br>
             <a href="main.html">Log In Here</a></p>
         </div>
+        
+        <script>
+            function redirectToLogin(event) {
+                event.preventDefault(); // Prevents default form submission behavior
+        
+                // Perform any sign-up logic here (e.g., saving to session storage, API calls)
+                
+                // Redirect to the login page
+                window.location.href = 'main.html'; // Adjust this to your login page URL
+            }
+        </script>        
 
     </div>
     <script src="server.js"></script>
