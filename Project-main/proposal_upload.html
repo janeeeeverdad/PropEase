@@ -163,12 +163,23 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100px; /* Adjusted width for better alignment */
-    height: 120px; /* Adjusted height for alignment */
+    width: 100px; /* Fixed width */
+    height: 120px; /* Fixed height */
     border: 2px dashed #51087E;
     border-radius: 10px;
     text-align: center;
     cursor: pointer;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Uploaded File List Container */
+#file-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: flex-start;
+    flex-wrap: wrap; /* Allow wrapping to new lines */
+    max-width: calc(100vw - 300px); /* Limit width to avoid squeezing */
 }
 
 .upload-button {
@@ -182,14 +193,6 @@
 .upload-button ion-icon {
     font-size: 30px;
     color: #51087E;
-}
-
-/* Uploaded File Bubble */
-#file-list {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: flex-start; /* Align bubbles to the top */
 }
 
 .file-bubble {
@@ -216,7 +219,10 @@
     font-size: 12px;
     color: #51087E;
     margin-top: 5px;
-    word-break: break-word;
+    word-break: break-word; /* Break long words onto the next line */
+    max-width: 100px; /* Set max width to control wrapping within the bubble */
+    line-height: 1.2; /* Adjust line spacing */
+    white-space: normal; /* Allow text to wrap onto multiple lines */
 }
 
     </style>
@@ -257,10 +263,12 @@
                 <ion-icon name="add-circle-outline"></ion-icon>
             </div>
         </div>
-        <input type="file" id="file-upload" accept=".pdf,.doc,.docx" style="display: none;" onchange="displayUploadedFiles()">
-        
+        <!-- Allow multiple files selection -->
+        <input type="file" id="file-upload" accept=".pdf,.doc,.docx" multiple style="display: none;" onchange="displayUploadedFiles()">
+
+        <!-- File List Container -->
         <div id="file-list">
-            <!-- Uploaded files will appear here -->
+        <!-- Uploaded files will appear here -->
         </div>
     </div>
 

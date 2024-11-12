@@ -1,7 +1,6 @@
 // TOGGLE MENU
 function toggleMenu() {
-    const menu = document.getElementById('menu');
-    menu.style.left = menu.style.left === '0px' ? '-300px' : '0px';
+    document.body.classList.toggle('menu-open');
 }
 
 // Close menu when clicking outside of it
@@ -13,12 +12,12 @@ document.addEventListener('click', function(event) {
     }
 });
 
-//PROPOSAL PAGE -- UPLOADING A FILES
+// PROPOSAL PAGE -- UPLOADED FILES
 function displayUploadedFiles() {
     const fileInput = document.getElementById('file-upload');
     const fileList = document.getElementById('file-list');
-    fileList.innerHTML = ''; // Clear existing files
     
+    // Loop through the newly selected files and append them to the list
     Array.from(fileInput.files).forEach((file) => {
         const fileContainer = document.createElement('div');
         
@@ -41,6 +40,9 @@ function displayUploadedFiles() {
         fileContainer.appendChild(fileCaption);
         fileList.appendChild(fileContainer);
     });
+
+    // Clear the file input to allow re-uploading the same file if needed
+    fileInput.value = '';
 }
 function openFileView(file) {
     // Redirect to the second interface page with the file name as a parameter
