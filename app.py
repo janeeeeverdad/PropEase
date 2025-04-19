@@ -15,6 +15,23 @@ from functools import wraps
 from werkzeug.utils import secure_filename
 from sklearn.feature_extraction.text import TfidfVectorizer 
 
+from flask import Flask, request, jsonify
+from t5_title_generator import generate_title  # This imports your function
+from transformers import T5Tokenizer, T5ForConditionalGeneration
+import torch
+from flask import Flask, request, jsonify
+from keybert import KeyBERT
+import pdfplumber
+import os
+from difflib import SequenceMatcher
+
+# Load model and tokenizer once
+model_path = r"C:\Users\JaneBenneth\OneDrive\Documents\THESIS\Propease_March2025\t5_title_generator_model"
+tokenizer = T5Tokenizer.from_pretrained(model_path)
+model = T5ForConditionalGeneration.from_pretrained(model_path)
+kw_model = KeyBERT() 
+USE_EMOJIS_IN_LOGS = False  # Set to True if you want emojis in your debug logs
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "your_secret_key")  # Use environment variable for security
 app.config['SESSION_TYPE'] = 'filesystem'  # Store session data on the server
@@ -312,6 +329,112 @@ def proposal_upload():
 
     return render_template('proposal_upload.html', files=files)
 
+# Load grammar correction model
+grammar_tokenizer = T5Tokenizer.from_pretrained("vennify/t5-base-grammar-correction")
+grammar_model = T5ForConditionalGeneration.from_pretrained("vennify/t5-base-grammar-correction")
+
+def is_similar(a, b, threshold=0.85):
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio() > threshold
+
+def correct_grammar(text):
+    try:
+        input_text = f"grammar: {text}"
+        input_ids = grammar_tokenizer.encode(input_text, return_tensors="pt", truncation=True, max_length=128)
+        outputs = grammar_model.generate(input_ids, max_length=64, num_beams=4, early_stopping=True)
+        return grammar_tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+    except Exception:
+        return text  # fallback to original if grammar model fails
+
+# Optional filter: words expected in ComSci research titles
+cs_keywords = {"system", "algorithm", "application", "framework", "detection", "machine learning", 
+               "artificial intelligence", "deep learning", "natural language", "NLP", "automation", 
+               "technology", "web", "mobile", "classification", "data", "neural", "network", "model"}
+
+@app.route('/generate_title', methods=['POST'])
+def generate_title():
+    data = request.get_json()
+    extracted_text = data.get('extracted_text')
+
+    if not extracted_text:
+        return jsonify({'status': 'error', 'message': 'No extracted text provided'}), 400
+
+    try:
+        # ✅ Extract keywords
+        keywords = kw_model.extract_keywords(
+            extracted_text,
+            keyphrase_ngram_range=(1, 2),
+            stop_words='english',
+            top_n=5
+        )
+        keyword_list = [kw for kw, _ in keywords]
+        keyword_str = ', '.join(keyword_list)
+
+        # ✅ Stronger prompt with CS emphasis
+        prompt = (
+            f"Generate 5 academic research project titles related to computer science. "
+            f"Context: {extracted_text.strip()}. Use keywords: {keyword_str}."
+        )
+
+        inputs = tokenizer.encode(prompt, return_tensors="pt", truncation=True, max_length=512)
+
+        outputs = model.generate(
+            inputs,
+            max_length=32,
+            min_length=8,
+            num_beams=20,
+            num_return_sequences=20,
+            no_repeat_ngram_size=2,
+            repetition_penalty=1.2,
+            early_stopping=True
+        )
+
+        raw_titles = [tokenizer.decode(output, skip_special_tokens=True).strip() for output in outputs]
+
+        # ✅ Filter by length and uniqueness
+        filtered_titles = []
+        for title in raw_titles:
+            if len(title.split()) < 4:
+                continue
+            if all(not is_similar(title, existing) for existing in filtered_titles):
+                filtered_titles.append(title)
+            if len(filtered_titles) == 5:
+                break
+
+        # ✅ Fill remaining if under 5
+        if len(filtered_titles) < 5:
+            for title in raw_titles:
+                if title not in filtered_titles and len(title.split()) >= 4:
+                    filtered_titles.append(title)
+                if len(filtered_titles) == 5:
+                    break
+
+        # ✅ Correct grammar
+        corrected_titles = [correct_grammar(title) for title in filtered_titles]
+
+        # 🔍 Optional CS filter: keep only if it mentions common CS terms (loose check)
+        final_titles = [title for title in corrected_titles if any(cs_word.lower() in title.lower() for cs_word in cs_keywords)]
+        if len(final_titles) < 5:
+            final_titles += [t for t in corrected_titles if t not in final_titles][:5 - len(final_titles)]
+
+        # ✅ Debug
+        print("[DEBUG] Extracted Keywords:", keyword_list)
+        print("[DEBUG] Final Titles:")
+        for t in final_titles:
+            print(f"- {t}")
+
+        return jsonify({
+            'status': 'success',
+            'titles': final_titles,
+            'keywords': keyword_list
+        })
+
+    except Exception as e:
+        print(f"❌ Error during title generation: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': 'An error occurred during title generation.'
+        }), 500
+    
 @app.route('/uploaded_file')
 @login_required
 def uploaded_file():
@@ -349,7 +472,7 @@ def proposal_view(file_id):
 
     if file_record:
         extracted_text = file_record.get('extracted_text', '')  # Ensure it’s not None
-        print("Extracted Text:", extracted_text)  # Debugging
+        print("Extracted Text:", extracted_text.encode('cp1252', errors='ignore').decode('cp1252'))
 
         paragraphs = [p.strip() for p in extracted_text.split('\n\n') if p.strip()]
         return render_template('proposal_view.html', extracted_text='\n\n'.join(paragraphs))

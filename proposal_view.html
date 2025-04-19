@@ -441,30 +441,59 @@
                                 <!-- Optional details will appear here -->
                             </div>
                         </div>
-                
-                        <!-- Title Recommendations -->
-                        <div class="analysis-item">
+                        
+                        <!-- Title Recommendations Section (with a specific ID for targeting) -->
+                        <div class="analysis-item" id="titleRecommendationsSection">
                             <h5>Title Recommendations:</h5>
-                            <div class="recommendation-item">
-                                <div class="recommendation-text">Enhancing Smart Wearables with IoT-Based Health Monitoring</div>
-                                <div class="recommendation-reason">
-                                    This title is recommended based on keywords related to wearable technology, health monitoring, and IoT from your concept.
-                                </div>
-                            </div>
-                            <div class="recommendation-item">
-                                <div class="recommendation-text">Real-Time Traffic Analysis Using Computer Vision</div>
-                                <div class="recommendation-reason">
-                                    Your concept discusses image processing and urban planning, which aligns with this system-driven approach.
-                                </div>
-                            </div>
+                            <!-- Titles will be inserted here dynamically -->
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>        
     </div>
 
     <script>
+        async function generateTitle() {
+            const extractedText = document.querySelector('#extracted-text').innerText;
+
+            try {
+                const response = await fetch('/generate_title', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ extracted_text: extractedText })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success' && data.titles.length > 0) {
+                    const recommendationsSection = document.querySelector('#titleRecommendationsSection');
+                    
+                    // Clear the Title Recommendations section before adding new content
+                    recommendationsSection.innerHTML = '<h5>Title Recommendations:</h5>';
+
+                    // Loop through the generated titles and add them to the section
+                    data.titles.forEach((title) => {
+                        const div = document.createElement('div');
+                        div.className = 'recommendation-item';
+                        div.innerHTML = `
+                            <div class="recommendation-text">${title}</div>
+                            <div class="recommendation-reason">
+                                This title was generated based on the uploaded paper's content.
+                            </div>
+                        `;
+                        recommendationsSection.appendChild(div);
+                    });
+                } else {
+                    console.error('Title generation failed:', data.message);
+                }
+
+            } catch (error) {
+                console.error('Error generating title:', error);
+            }
+        }
         function toggleMenu() {
             const menu = document.getElementById("menu");
             const body = document.body;
@@ -623,13 +652,19 @@
         }
 
         // Call analysis when page loads and after speech recognition ends
-        document.addEventListener('DOMContentLoaded', analyzePDFContent);
+        document.addEventListener('DOMContentLoaded', () => {
+            analyzePDFContent();
+            generateTitle(); // ✨ New line added
+        });
+
         recognition.onend = function() {
             if (isListening) {
                 recognition.start();
             }
-            analyzePDFContent(); // Analyze content after speech recognition ends
+            analyzePDFContent();
+            generateTitle(); // ✨ New line added
         };
+
 
         function updateAnalysisDisplay(results) {
             // Update similarity score
